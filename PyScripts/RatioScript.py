@@ -2,7 +2,7 @@ import csv
 
 #def getRatios(fileDirectory)
     #TODO When completed make it so this runs using the above method header
-with open('PyScripts/HasData.csv') as csvfile:
+with open('PyScripts/Data.csv') as csvfile:
     reader = csv.reader(csvfile)
     totalAssets = 0.0
     totalLiabilities = 0.0
@@ -11,6 +11,9 @@ with open('PyScripts/HasData.csv') as csvfile:
     currentAssets = 0.0
     cash = 0.0
     treasuryStock = 0
+    totalEquity = 0.0
+    revenue = 0.0
+    earnings = 0.0
     for row in reader:
         aspect = row[0].lower()
         if(aspect == 'total assets'):
@@ -25,16 +28,23 @@ with open('PyScripts/HasData.csv') as csvfile:
             currentAssets = float(row[1])
         elif("treasury stock" in aspect):
             treasuryStock = int(row[1])
+        elif(aspect == "total shareholders' equity" or aspect == "total stockholders' equity"):
+            totalEquity = float(row[1])
+        elif(aspect == "net revenues" or aspect == "total revenues"):
+            revenue = float(row[1])
+        elif(aspect == "net earnings" or aspect == "net loss"):
+            earnings = float(row[1])
     #TODO Make it calculate net profit margin
         
-    totalEquity = totalAssets-totalLiabilities
+    if(totalEquity == 0 and totalLiabilities != 0):
+        totalEquity = totalAssets-totalLiabilities
     debt_to_assets = totalLiabilities/totalAssets
     longTermLiabilities = totalLiabilities - currentLiabilities
     longtermDE = longTermLiabilities/totalEquity
     debt_to_equity = totalLiabilities/totalEquity
     cashRatio = cash/currentLiabilities
     current_Ratio = currentAssets/currentLiabilities
-
+    netPorfitMargin = earnings/revenue
 with open('dump.csv', 'w', newline='') as dumpFile:
     writer = csv.writer(dumpFile)
     writer.writerow(["Ratio", "Value"])
@@ -44,3 +54,4 @@ with open('dump.csv', 'w', newline='') as dumpFile:
     writer.writerow(["Debt-to-equity Ratio", str(debt_to_equity)])
     writer.writerow(["Longterm DE", str(longtermDE)])
     writer.writerow(["Treasury Stock", str(treasuryStock)])
+    writer.writerow(["Net Profit margin", str(netPorfitMargin)])
