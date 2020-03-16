@@ -28,15 +28,17 @@ def getRatios(dataDirectory, companyName, companyTicker):
                 currentAssets = float(row[1])
             elif("treasury stock" in aspect):
                 treasuryStock = int(row[1])
-            elif(aspect == "total shareholders' equity" or aspect == "total stockholders' equity"):
+            elif(aspect == "total shareholders' equity" or aspect == "total stockholders' equity" or aspect == "total equity"):
                 totalEquity = float(row[1])
-            elif(aspect == "net revenues" or aspect == "total revenues"):
+            elif(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues"):
                 revenue = float(row[1])
-            elif(aspect == "net earnings" or aspect == "net loss"):
+            elif(aspect == "net earnings" or aspect == "net loss" or aspect == "net income"):
                 earnings = float(row[1])
     # Calculate Ratios
     if(totalEquity == 0 and totalLiabilities != 0):
         totalEquity = totalAssets-totalLiabilities
+    if(totalLiabilities == 0 and totalAssets != 0 and totalEquity != 0):
+        totalLiabilities = totalAssets - totalEquity 
     debt_to_assets = totalLiabilities/totalAssets
     longTermLiabilities = totalLiabilities - currentLiabilities
     longtermDE = longTermLiabilities/totalEquity
@@ -44,7 +46,7 @@ def getRatios(dataDirectory, companyName, companyTicker):
     cashRatio = cash/currentLiabilities
     current_Ratio = currentAssets/currentLiabilities
     if(revenue == 0):
-        netPorfitMargin = 0
+        netPorfitMargin = "Rev was 0"
     else:
         netPorfitMargin = earnings/revenue
 
