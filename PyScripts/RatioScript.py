@@ -22,7 +22,14 @@ def getRatios(dataDirectory):
     xlsx_file = Path(dataDirectory)
     wb_obj = openpyxl.load_workbook(xlsx_file)
     # Read the first sheet:
+    balanceSheetName = ""
+    statementOfOperationsName = ""
     coverSheet = wb_obj.active
+    for sheetName in wb_obj.sheetnames:
+        if(sheetName.lower() == "consolidated balance sheets"):
+            balanceSheetName = sheetName
+        elif(sheetName.lower() == "consolidated statements of oper"):
+            statementOfOperationsName = sheetName
     for row in coverSheet.iter_rows():
         if(row[0].value != None):
             aspect = row[0].value.lower()
@@ -30,7 +37,9 @@ def getRatios(dataDirectory):
                 companyTicker = row[1].value
             elif(aspect == "entity registrant name"):
                 companyName = row[1].value
-    balanceSheet = wb_obj['Consolidated Balance Sheets']
+    balanceSheet = wb_obj[balanceSheetName]
+    print(statementOfOperationsName)
+    operationsStatement = wb_obj[statementOfOperationsName]
     for row in balanceSheet.iter_rows():
     #for row in reader:
         aspect = row[0].value.lower()
@@ -49,7 +58,8 @@ def getRatios(dataDirectory):
         elif(ParserLogic.isTotalStockHoldersEquity(aspect)):
         #elif("Total stockholders’ equity (deficit)" == aspect):
             totalEquity = float(row[1].value)
-        elif(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues" or aspect == "net sales"):
+    for row in operationsStatement.iter_rows():
+        if(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues" or aspect == "net sales"):
             revenue = float(row[1].value)
         elif(aspect == "net earnings" or aspect == "net loss" or aspect == "net income"):
             earnings = float(row[1].value)
