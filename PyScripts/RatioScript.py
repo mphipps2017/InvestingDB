@@ -1,40 +1,58 @@
 import csv
 import ParserLogic
+import openpyxl
+from pathlib import Path
 
-def getRatios(dataDirectory, companyName, companyTicker):
-    with open(dataDirectory) as csvfile:
-        reader = csv.reader(csvfile)
-        totalAssets = 0.0
-        totalLiabilities = 0.0
-        totalEquity = 0.0
-        currentLiabilities = 0.0
-        currentAssets = 0.0
-        cash = 0.0
-        treasuryStock = 0
-        totalEquity = 0.0
-        revenue = 0.0
-        earnings = 0.0
-        # Parse input data
-        for row in reader:
-            aspect = row[0].lower()
-            if(aspect == 'total assets'):
-                totalAssets = float(row[1])
-            elif("total liabilities" == aspect):
-                totalLiabilities = float(row[1])
-            elif(aspect == 'total current liabilities'):
-                currentLiabilities = float(row[1])
-            elif("cash" in aspect):
-                cash = float(row[1])
-            elif(aspect == 'total current assets'):
-                currentAssets = float(row[1])
-            elif("treasury stock" in aspect):
-                treasuryStock = int(row[1])
-            elif(ParserLogic.isTotalStockHoldersEquity(aspect)):
-                totalEquity = float(row[1])
-            elif(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues" or aspect == "net sales"):
-                revenue = float(row[1])
-            elif(aspect == "net earnings" or aspect == "net loss" or aspect == "net income"):
-                earnings = float(row[1])
+def getRatios(dataDirectory):
+    companyName = ""
+    companyTicker = ""
+    #with open(dataDirectory) as csvfile:
+    #reader = csv.reader(csvfile)
+    totalAssets = 0.0
+    totalLiabilities = 0.0
+    totalEquity = 0.0
+    currentLiabilities = 0.0
+    currentAssets = 0.0
+    cash = 0.0
+    treasuryStock = 0
+    totalEquity = 0.0
+    revenue = 0.0
+    earnings = 0.0
+    # Parse input data
+    xlsx_file = Path(dataDirectory)
+    wb_obj = openpyxl.load_workbook(xlsx_file)
+    # Read the first sheet:
+    coverSheet = wb_obj.active
+    for row in coverSheet.iter_rows():
+        if(row[0].value != None):
+            aspect = row[0].value.lower()
+            if(aspect == "trading symbol"):
+                companyTicker = row[1].value
+            elif(aspect == "entity registrant name"):
+                companyName = row[1].value
+    balanceSheet = wb_obj['Consolidated Balance Sheets']
+    for row in balanceSheet.iter_rows():
+    #for row in reader:
+        aspect = row[0].value.lower()
+        if(aspect == 'total assets'):
+            totalAssets = float(row[1].value)
+        elif("total liabilities" == aspect):
+            totalLiabilities = float(row[1].value)
+        elif(aspect == 'total current liabilities'):
+            currentLiabilities = float(row[1].value)
+        elif("cash" in aspect):
+            cash = float(row[1].value)
+        elif(aspect == 'total current assets'):
+            currentAssets = float(row[1].value)
+        elif("treasury stock" in aspect):
+            treasuryStock = int(row[1].value)
+        elif(ParserLogic.isTotalStockHoldersEquity(aspect)):
+        #elif("Total stockholders’ equity (deficit)" == aspect):
+            totalEquity = float(row[1].value)
+        elif(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues" or aspect == "net sales"):
+            revenue = float(row[1].value)
+        elif(aspect == "net earnings" or aspect == "net loss" or aspect == "net income"):
+            earnings = float(row[1].value)
     # Calculate Ratios
     if(totalEquity == 0 and totalLiabilities != 0):
         totalEquity = totalAssets-totalLiabilities
@@ -65,3 +83,4 @@ def getRatios(dataDirectory, companyName, companyTicker):
         writer.writerow(["Longterm DE", str(longtermDE)])
         writer.writerow(["Treasury Stock", str(treasuryStock)])
         writer.writerow(["Net Profit margin", str(netPorfitMargin)])
+    return dumpName

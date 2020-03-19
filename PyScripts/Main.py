@@ -1,5 +1,8 @@
 import RatioScript
+import os
 fileDirectory = input("Data Directory:\n")
-companyName   = input("Compnay name:\n")
-companyTicker = input("Company Ticker:\n")
-RatioScript.getRatios(fileDirectory, companyName, companyTicker)
+if(fileDirectory == ""):
+    fileDirectory = "Financial_Report.xlsx"
+fileDirectory = os.getcwd() +"/" +fileDirectory
+name = RatioScript.getRatios(fileDirectory)
+print("Success!\nDump: "+name+" created!")
