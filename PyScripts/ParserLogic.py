@@ -5,7 +5,7 @@ def isTotalStockHoldersEquity(aspect):
         return True
     return False
 
-def getRowValue(row):
+def getNearestRowValue(row):
     ret = 0
     loop = 1
     i = 1

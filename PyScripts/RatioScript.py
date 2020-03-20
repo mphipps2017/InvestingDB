@@ -46,20 +46,20 @@ def getRatios(dataDirectory):
             aspect = ""
 
         if(aspect == 'total assets'):
-            totalAssets = ParserLogic.getRowValue(row)
+            totalAssets = ParserLogic.getNearestRowValue(row)
         elif("total liabilities" == aspect):
-            totalLiabilities = ParserLogic.getRowValue(row)
+            totalLiabilities = ParserLogic.getNearestRowValue(row)
         elif(aspect == 'total current liabilities'):
-            currentLiabilities = ParserLogic.getRowValue(row)
+            currentLiabilities = ParserLogic.getNearestRowValue(row)
         elif("cash" in aspect):
-            cash = ParserLogic.getRowValue(row)
+            cash = ParserLogic.getNearestRowValue(row)
         elif(aspect == 'total current assets'):
-            currentAssets = ParserLogic.getRowValue(row)
+            currentAssets = ParserLogic.getNearestRowValue(row)
         elif("treasury stock" in aspect):
-            treasuryStock = ParserLogic.getRowValue(row)
+            treasuryStock = ParserLogic.getNearestRowValue(row)
         elif(ParserLogic.isTotalStockHoldersEquity(aspect)):
         #elif("Total stockholders’ equity (deficit)" == aspect):
-            totalEquity = ParserLogic.getRowValue(row)
+            totalEquity = ParserLogic.getNearestRowValue(row)
 
     for row in operationsStatement.iter_rows():
         try:
@@ -68,9 +68,9 @@ def getRatios(dataDirectory):
             aspect = ""
 
         if(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues" or aspect == "net sales"):
-            revenue = ParserLogic.getRowValue(row)
+            revenue = ParserLogic.getNearestRowValue(row)
         elif(aspect == "net earnings" or aspect == "net loss" or aspect == "net income"):
-            earnings = ParserLogic.getRowValue(row)
+            earnings = ParserLogic.getNearestRowValue(row)
 
     # Calculate Ratios
     if(totalEquity == 0 and totalLiabilities != 0):
