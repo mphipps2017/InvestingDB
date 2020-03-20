@@ -38,31 +38,40 @@ def getRatios(dataDirectory):
             elif(aspect == "entity registrant name"):
                 companyName = row[1].value
     balanceSheet = wb_obj[balanceSheetName]
-    print(statementOfOperationsName)
     operationsStatement = wb_obj[statementOfOperationsName]
     for row in balanceSheet.iter_rows():
-    #for row in reader:
-        aspect = row[0].value.lower()
+        try:
+            aspect = row[0].value.lower()
+        except AttributeError:
+            aspect = ""
+
         if(aspect == 'total assets'):
-            totalAssets = float(row[1].value)
+            totalAssets = ParserLogic.getRowValue(row)
         elif("total liabilities" == aspect):
-            totalLiabilities = float(row[1].value)
+            totalLiabilities = ParserLogic.getRowValue(row)
         elif(aspect == 'total current liabilities'):
-            currentLiabilities = float(row[1].value)
+            currentLiabilities = ParserLogic.getRowValue(row)
         elif("cash" in aspect):
-            cash = float(row[1].value)
+            cash = ParserLogic.getRowValue(row)
         elif(aspect == 'total current assets'):
-            currentAssets = float(row[1].value)
+            currentAssets = ParserLogic.getRowValue(row)
         elif("treasury stock" in aspect):
-            treasuryStock = int(row[1].value)
+            treasuryStock = ParserLogic.getRowValue(row)
         elif(ParserLogic.isTotalStockHoldersEquity(aspect)):
         #elif("Total stockholders’ equity (deficit)" == aspect):
-            totalEquity = float(row[1].value)
+            totalEquity = ParserLogic.getRowValue(row)
+
     for row in operationsStatement.iter_rows():
+        try:
+            aspect = row[0].value.lower()
+        except AttributeError:
+            aspect = ""
+
         if(aspect == "net revenues" or aspect == "total revenues" or aspect == "operating revenues" or aspect == "net sales"):
-            revenue = float(row[1].value)
+            revenue = ParserLogic.getRowValue(row)
         elif(aspect == "net earnings" or aspect == "net loss" or aspect == "net income"):
-            earnings = float(row[1].value)
+            earnings = ParserLogic.getRowValue(row)
+
     # Calculate Ratios
     if(totalEquity == 0 and totalLiabilities != 0):
         totalEquity = totalAssets-totalLiabilities
@@ -73,8 +82,14 @@ def getRatios(dataDirectory):
     longTermLiabilities = totalLiabilities - currentLiabilities
     longtermDE = longTermLiabilities/totalEquity
     debt_to_equity = totalLiabilities/totalEquity
-    cashRatio = cash/currentLiabilities
-    current_Ratio = currentAssets/currentLiabilities
+    
+    try:
+        cashRatio = cash/currentLiabilities
+        current_Ratio = currentAssets/currentLiabilities
+    except ZeroDivisionError:
+        cashRatio = "No current Liabilities (div by zero)"
+        current_Ratio = "No current Liabilities (div by zero)"
+    
     if(revenue == 0):
         netPorfitMargin = "Rev was 0"
     else:
