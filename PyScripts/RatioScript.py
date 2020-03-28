@@ -30,6 +30,8 @@ def getRatios(dataDirectory):
             balanceSheetName = sheetName
         elif(sheetName.lower() == "consolidated statements of oper"):
             statementOfOperationsName = sheetName
+        elif(sheetName.lower() == "consolidated statements of comp"):
+            statementOfOperationsName = sheetName
     for row in coverSheet.iter_rows():
         if(row[0].value != None):
             aspect = row[0].value.lower()
